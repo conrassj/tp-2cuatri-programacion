@@ -1,0 +1,103 @@
+{
+  "info": {
+    "name": "TP Backend - Semana 1 - Gestion de Turnos Medicos",
+    "description": "Pruebas de los endpoints de autenticacion: registro, login y perfil protegido.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Coberturas disponibles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/coberturas", "host": ["{{base_url}}"], "path": ["coberturas"] }
+      }
+    },
+    {
+      "name": "Registro de paciente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Lucas\",\n  \"apellido\": \"Fernandez\",\n  \"dni\": \"40123456\",\n  \"email\": \"lucas.fernandez@mail.com\",\n  \"password\": \"claveSegura123\",\n  \"fecha_nacimiento\": \"1999-04-22\",\n  \"id_cobertura\": 1,\n  \"telefono\": \"3424999888\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/auth/registro", "host": ["{{base_url}}"], "path": ["auth", "registro"] }
+      }
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+              "var data = pm.response.json();",
+              "if (data && data.datos && data.datos.token) {",
+              "    pm.collectionVariables.set('token', data.datos.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"40123456\",\n  \"password\": \"claveSegura123\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "Perfil (protegido - con token)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{base_url}}/auth/perfil", "host": ["{{base_url}}"], "path": ["auth", "perfil"] }
+      }
+    },
+    {
+      "name": "Perfil (sin token -> 401 esperado)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/auth/perfil", "host": ["{{base_url}}"], "path": ["auth", "perfil"] }
+      }
+    },
+    {
+      "name": "Admin-test (rol no permitido -> 403 esperado)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{base_url}}/auth/admin-test", "host": ["{{base_url}}"], "path": ["auth", "admin-test"] }
+      }
+    }
+  ]
+}
