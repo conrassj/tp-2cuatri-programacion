@@ -1,0 +1,14 @@
+<mat-card
+  ><div class="empty">
+    <mat-icon>{{ denegado ? 'lock_outline' : 'explore_off' }}</mat-icon>
+    <h1>{{ denegado ? 'Acceso denegado' : 'Página no encontrada' }}</h1>
+    <p>
+      {{
+        denegado
+          ? 'Tu usuario no tiene acceso a esta sección.'
+          : 'La dirección que ingresaste no existe.'
+      }}
+    </p>
+    <a mat-flat-button routerLink="/">Volver al inicio</a>
+  </div></mat-card
+>

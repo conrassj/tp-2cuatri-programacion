@@ -1,0 +1,27 @@
+<form class="filters" (ngSubmit)="buscar()">
+  <mat-form-field appearance="outline"
+    ><mat-label>DNI o apellido del paciente</mat-label
+    ><input matInput name="busqueda" [(ngModel)]="q" minlength="2" /><mat-icon matPrefix
+      >search</mat-icon
+    ></mat-form-field
+  ><button mat-stroked-button [disabled]="cargando() || q.trim().length < 2">
+    Buscar paciente
+  </button>
+</form>
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+@for (p of items(); track p.id) {
+  <div class="patient-row">
+    <div>
+      <strong>{{ p.apellido }}, {{ p.nombre }}</strong
+      ><span class="muted">DNI {{ p.dni }} · {{ p.cobertura }}</span>
+    </div>
+    <button mat-button (click)="elegido.emit(p)">
+      Seleccionar <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+}
+@if (buscado() && !cargando() && !items().length && !error()) {
+  <p class="notice">No encontramos pacientes con esos datos.</p>
+}

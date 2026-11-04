@@ -1,0 +1,86 @@
+<div class="auth-layout">
+  <section class="auth-intro">
+    <span class="eyebrow">CLÍNICA VIRTUAL</span>
+    <h1>Tu salud,<br />más cerca.</h1>
+    <p>Un lugar para organizar tus consultas y acompañar cada paso de tu atención.</p>
+    <div class="intro-line">
+      <mat-icon>event_available</mat-icon><span>Elegí un horario disponible</span>
+    </div>
+    <div class="intro-line">
+      <mat-icon>folder_shared</mat-icon><span>Consultá el resultado de tu atención</span>
+    </div>
+    <div class="intro-line">
+      <mat-icon>notifications_active</mat-icon><span>Recibí las novedades de tus turnos</span>
+    </div>
+    <div class="medical-art" aria-hidden="true">
+      <span>+</span><i></i><b>Estamos para cuidarte</b>
+    </div>
+  </section>
+  <mat-card class="auth-card"
+    ><mat-card-content
+      ><span class="eyebrow">{{ registro ? 'CREÁ TU CUENTA' : 'BIENVENIDO DE NUEVO' }}</span>
+      <h2>{{ registro ? 'Registro de paciente' : 'Iniciar sesión' }}</h2>
+      <p class="muted">
+        {{ registro ? 'Completá tus datos para empezar.' : 'Ingresá con tu DNI y contraseña.' }}
+      </p>
+      @if (vencida) {
+        <p class="notice">Tu sesión venció. Ingresá nuevamente.</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="enviar()">
+        <div [class.form-grid]="registro">
+          @for (c of campos; track c.clave) {
+            <mat-form-field appearance="outline"
+              ><mat-label>{{ c.nombre }}</mat-label
+              ><input
+                matInput
+                [formControlName]="c.clave"
+                [type]="c.tipo"
+                [attr.maxlength]="c.max"
+                [attr.max]="c.tipo === 'date' ? hoy : null"
+                [autocomplete]="
+                  c.clave === 'password'
+                    ? registro
+                      ? 'new-password'
+                      : 'current-password'
+                    : c.clave === 'dni'
+                      ? 'username'
+                      : 'off'
+                "
+              /><mat-error>{{ errorCampo(c.clave) }}</mat-error></mat-form-field
+            >
+          }
+          @if (registro) {
+            <mat-form-field appearance="outline"
+              ><mat-label>Cobertura</mat-label
+              ><mat-select formControlName="id_cobertura">
+                @for (c of coberturas(); track c.id) {
+                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                }</mat-select
+              ><mat-error>Elegí tu cobertura.</mat-error></mat-form-field
+            >
+          }
+        </div>
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+        <button
+          mat-flat-button
+          class="wide"
+          [disabled]="ocupado() || (registro && !coberturas().length)"
+        >
+          {{ ocupado() ? 'Un momento…' : registro ? 'Crear cuenta' : 'Ingresar' }}
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </form>
+      <p class="auth-switch">
+        {{ registro ? '¿Ya tenés una cuenta?' : '¿Es tu primera visita?' }}
+        <a [routerLink]="registro ? '/login' : '/registro'">{{
+          registro ? 'Iniciá sesión' : 'Registrate'
+        }}</a>
+      </p>
+      @if (registro && !coberturas().length) {
+        <button mat-button (click)="cargarCoberturas()">Reintentar cargar coberturas</button>
+      }
+    </mat-card-content></mat-card
+  >
+</div>

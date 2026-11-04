@@ -1,0 +1,65 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>{{ titulo }}</h1>
+    <p>{{ descripcion }}</p>
+  </div>
+  <button mat-flat-button (click)="editar()"><mat-icon>add</mat-icon>Agregar {{ singular }}</button>
+</div>
+<mat-card
+  ><mat-card-content
+    ><div class="table-toolbar">
+      <mat-form-field appearance="outline"
+        ><mat-label>Buscar {{ titulo.toLowerCase() }}</mat-label
+        ><input matInput [(ngModel)]="filtro" /><mat-icon matPrefix
+          >search</mat-icon
+        ></mat-form-field
+      ><span class="muted">{{ filtradas().length }} registros</span
+      ><button mat-icon-button (click)="cargar()" aria-label="Actualizar">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @if (!cargando() && !filtradas().length) {
+      <div class="empty">
+        <mat-icon>search_off</mat-icon>
+        <h3>No hay resultados</h3>
+        <p>Probá otra búsqueda o agregá un registro.</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="filtradas()">
+        <ng-container matColumnDef="nombre"
+          ><th mat-header-cell *matHeaderCellDef>
+            {{ esEspecialidad ? 'Descripción' : 'Nombre' }}
+          </th>
+          <td mat-cell *matCellDef="let e">
+            <strong>{{ e.nombre || e.descripcion }}</strong>
+          </td></ng-container
+        ><ng-container matColumnDef="direccion"
+          ><th mat-header-cell *matHeaderCellDef>Dirección</th>
+          <td mat-cell *matCellDef="let e">{{ e.direccion }}</td></ng-container
+        ><ng-container matColumnDef="telefono"
+          ><th mat-header-cell *matHeaderCellDef>Teléfono</th>
+          <td mat-cell *matCellDef="let e">{{ e.telefono }}</td></ng-container
+        ><ng-container matColumnDef="acciones"
+          ><th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let e">
+            <button mat-icon-button (click)="editar(e)" aria-label="Editar">
+              <mat-icon>edit</mat-icon></button
+            ><button
+              mat-icon-button
+              (click)="eliminar(e)"
+              [disabled]="borrando()"
+              aria-label="Eliminar"
+            >
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td></ng-container
+        >
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+      </table>
+    }</mat-card-content
+></mat-card>

@@ -1,0 +1,93 @@
+<header class="header">
+  <a class="brand" routerLink="/"
+    ><span class="brand-mark">+</span
+    ><span
+      >clínica<span class="brand-light"> virtual</span><small>ESPACIO DE ATENCIÓN</small></span
+    ></a
+  >
+  <div class="header-right">
+    @if (auth.usuario(); as u) {
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="avisos"
+        (click)="notificaciones.cargar()"
+        aria-label="Notificaciones"
+        [matBadge]="notificaciones.pendientes()"
+        [matBadgeHidden]="notificaciones.pendientes() === 0"
+      >
+        <mat-icon>notifications_none</mat-icon></button
+      ><mat-menu #avisos="matMenu" class="notification-menu"
+        ><div class="notification-title">Notificaciones</div>
+        @if (notificaciones.error()) {
+          <p class="error">{{ notificaciones.error() }}</p>
+        }
+        @for (n of notificaciones.items(); track n.id) {
+          <button mat-menu-item (click)="leer(n.id)" [class.unread]="!n.leida">
+            <mat-icon>{{ n.leida ? 'drafts' : 'mark_email_unread' }}</mat-icon
+            ><span
+              >{{ n.mensaje }}<small>{{ n.fecha | date: 'dd/MM/yyyy HH:mm' }}</small></span
+            >
+          </button>
+        } @empty {
+          <p class="empty-small">No tenés notificaciones.</p>
+        }
+      </mat-menu>
+      <div class="header-user">
+        <span class="avatar">{{ u.nombre.charAt(0) }}{{ u.apellido.charAt(0) }}</span>
+        <div>
+          <strong>{{ u.nombre }} {{ u.apellido }}</strong
+          ><small>{{ roles[u.rol] }}</small>
+        </div>
+      </div>
+      <button mat-icon-button [matTooltip]="roles[u.rol]" aria-label="Tipo de usuario">
+        <mat-icon>info_outline</mat-icon></button
+      ><button mat-button (click)="auth.salir()">Cerrar sesión</button>
+    } @else {
+      <span class="muted header-welcome">Bienvenido a la clínica virtual</span
+      ><a mat-button routerLink="/login">Ingresar</a
+      ><a mat-flat-button routerLink="/registro">Registrarse</a>
+    }
+  </div>
+</header>
+<div class="loading-line">
+  @if (api.pendientes() > 0) {
+    <mat-progress-bar mode="indeterminate" aria-label="Cargando"></mat-progress-bar>
+  }
+</div>
+<div class="app-body">
+  @if (auth.usuario()) {
+    <aside class="sidebar">
+      <span class="nav-label">MI ESPACIO</span>
+      <nav aria-label="Menú principal">
+        @for (m of menu(); track m.ruta) {
+          <a
+            [routerLink]="m.ruta"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ><mat-icon>{{ m.icono }}</mat-icon
+            >{{ m.texto }}</a
+          >
+        }
+      </nav>
+      <div class="sidebar-note">
+        <mat-icon>favorite_border</mat-icon><strong>Estamos para cuidarte</strong
+        ><span>Tu atención, en un solo lugar.</span>
+      </div>
+    </aside>
+  }
+  <div class="content-column">
+    <main id="contenido">
+      @if (error()) {
+        <p class="error" role="alert">
+          {{ error() }} <button mat-button (click)="error.set('')">Cerrar</button>
+        </p>
+      }
+      <router-outlet></router-outlet>
+    </main>
+    <footer>
+      <span><strong>Clínica virtual</strong> · Proyecto académico</span
+      ><span>San Martín 123 · 3424000001 · contacto&#64;clinica.example</span
+      ><span>Redes: &#64;clinicavirtual (demostración)</span>
+    </footer>
+  </div>
+</div>

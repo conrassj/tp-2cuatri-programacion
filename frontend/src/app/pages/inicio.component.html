@@ -1,0 +1,67 @@
+@if (auth.usuario(); as u) {
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">TU ESPACIO DE ATENCIÓN</span>
+      <h1>Hola, {{ u.nombre }}.</h1>
+      <p>Todo listo para organizar tu día. Elegí una opción para comenzar.</p>
+    </div>
+    <span class="date-chip">{{ fecha | date: 'EEEE d MMMM' }}</span>
+  </div>
+  <section class="welcome-banner">
+    <div>
+      <span class="eyebrow">CLÍNICA VIRTUAL</span>
+      <h2>
+        {{
+          u.rol === 'paciente'
+            ? 'Cuidarte empieza por una consulta.'
+            : 'Una atención mejor organizada.'
+        }}
+      </h2>
+      <p>
+        {{
+          u.rol === 'paciente'
+            ? 'Encontrá tu especialista, elegí un horario y consultá tus turnos en un solo lugar.'
+            : 'Agendas, personas y consultas. La información que necesitás para trabajar, a mano.'
+        }}
+      </p>
+      <a mat-flat-button [routerLink]="principal()"
+        >{{
+          u.rol === 'paciente'
+            ? 'Solicitar un turno'
+            : u.rol === 'admin'
+              ? 'Ver reportes'
+              : 'Ver agenda'
+        }}<mat-icon>arrow_forward</mat-icon></a
+      >
+    </div>
+    <div class="banner-symbol" aria-hidden="true">+</div>
+  </section>
+  <div class="quick-grid">
+    @for (c of accesos(); track c.ruta) {
+      <a class="quick-card" [routerLink]="c.ruta"
+        ><mat-icon>{{ c.icono }}</mat-icon>
+        <h3>{{ c.titulo }}</h3>
+        <p>{{ c.texto }}</p>
+        <span>Ir a {{ c.titulo.toLowerCase() }} →</span></a
+      >
+    }
+  </div>
+} @else {
+  <section class="public-hero">
+    <span class="eyebrow">BIENVENIDO A LA CLÍNICA VIRTUAL</span>
+    <h1>Más tiempo para vos.<br />Tu atención, más simple.</h1>
+    <p>
+      Reservá una consulta, revisá tus próximos turnos y accedé a tu historial de atención desde un
+      mismo lugar.
+    </p>
+    <div class="actions">
+      <a mat-flat-button routerLink="/login">Iniciar sesión <mat-icon>arrow_forward</mat-icon></a
+      ><a mat-stroked-button routerLink="/registro">Crear una cuenta</a>
+    </div>
+    <div class="hero-bottom">
+      <span><mat-icon>event_available</mat-icon>Turnos en línea</span
+      ><span><mat-icon>medical_services</mat-icon>Distintas especialidades</span
+      ><span><mat-icon>location_on</mat-icon>Atención en nuestras sedes</span>
+    </div>
+  </section>
+}

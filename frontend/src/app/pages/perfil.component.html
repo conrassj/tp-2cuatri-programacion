@@ -1,0 +1,85 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">MI CUENTA</span>
+    <h1>{{ editable ? 'Mis datos personales' : 'Mi perfil' }}</h1>
+    <p>
+      {{
+        editable
+          ? 'Podés actualizar tu contacto, contraseña y cobertura.'
+          : 'Estos son tus datos registrados en la clínica.'
+      }}
+    </p>
+  </div>
+  <button mat-button (click)="cargar()">Actualizar</button>
+</div>
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+@if (usuario(); as u) {
+  <mat-card
+    ><mat-card-content
+      ><h2>{{ u.nombre }} {{ u.apellido }}</h2>
+      <span class="status">{{ roles[u.rol] }}</span>
+      <div class="profile-grid">
+        <div><small>DNI</small>{{ u.dni }}</div>
+        <div><small>Fecha de nacimiento</small>{{ u.fecha_nacimiento | date: 'dd/MM/yyyy' }}</div>
+        <div><small>Sede</small>{{ sede() || 'Sin sede asignada' }}</div>
+      </div>
+      @if (editable) {
+        <form [formGroup]="form" (ngSubmit)="guardar()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline"
+              ><mat-label>Email</mat-label
+              ><input matInput formControlName="email" type="email" maxlength="30" /><mat-error
+                >Ingresá un email válido, de hasta 30 caracteres.</mat-error
+              ></mat-form-field
+            ><mat-form-field appearance="outline"
+              ><mat-label>Teléfono</mat-label
+              ><input matInput formControlName="telefono" maxlength="10" /><mat-error
+                >Ingresá entre 1 y 10 números.</mat-error
+              ></mat-form-field
+            ><mat-form-field appearance="outline"
+              ><mat-label>Cobertura</mat-label
+              ><mat-select formControlName="id_cobertura">
+                @for (c of coberturas(); track c.id) {
+                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                }</mat-select
+              ><mat-error>Elegí una cobertura.</mat-error></mat-form-field
+            >
+          </div>
+          <h3>Cambiar contraseña</h3>
+          <p>Dejá estos campos vacíos para conservar la actual.</p>
+          <div class="form-grid">
+            <mat-form-field appearance="outline"
+              ><mat-label>Nueva contraseña</mat-label
+              ><input
+                matInput
+                type="password"
+                autocomplete="new-password"
+                formControlName="password"
+                maxlength="72"
+              /><mat-error>Usá entre 6 y 72 caracteres.</mat-error></mat-form-field
+            ><mat-form-field appearance="outline"
+              ><mat-label>Repetir contraseña</mat-label
+              ><input
+                matInput
+                type="password"
+                autocomplete="new-password"
+                formControlName="repetir"
+                maxlength="72"
+            /></mat-form-field>
+          </div>
+          <button mat-flat-button [disabled]="ocupado()">
+            {{ ocupado() ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+        </form>
+      } @else {
+        <div class="profile-grid">
+          <div><small>Email</small>{{ u.email }}</div>
+          <div><small>Teléfono</small>{{ u.telefono }}</div>
+          <div><small>Cobertura</small>{{ cobertura() || 'No corresponde' }}</div>
+        </div>
+      }
+    </mat-card-content></mat-card
+  >
+}

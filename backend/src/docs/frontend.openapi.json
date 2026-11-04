@@ -1,0 +1,2687 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Clínica virtual — API final",
+    "version": "2.0.0",
+    "description": "API integrada con el frontend final. Respuesta uniforme: {codigo,estado,datos}. Usuarios y contraseñas de demostración en README."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Verifica servidor y conexión con MySQL",
+        "description": "Roles: público. Verifica servidor y conexión con MySQL.",
+        "tags": [
+          "Autenticación"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/auth/registro": {
+      "post": {
+        "summary": "Crea solo pacientes",
+        "description": "Roles: público. Crea solo pacientes. DNI y email únicos. Contraseña de 6 caracteres a 72 bytes. Fecha de nacimiento real y no futura.",
+        "tags": [
+          "Autenticación"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "apellido": {
+                    "type": "string"
+                  },
+                  "dni": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  },
+                  "fecha_nacimiento": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "id_cobertura": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Paciente",
+                "apellido": "Prueba",
+                "dni": "48999111",
+                "email": "paciente@prueba.test",
+                "telefono": "3424000000",
+                "fecha_nacimiento": "1998-05-10",
+                "password": "prueba123",
+                "id_cobertura": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Devuelve token y usuario sin contraseña",
+        "description": "Roles: público. Devuelve token y usuario sin contraseña.",
+        "tags": [
+          "Autenticación"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dni": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "dni": "18222333",
+                "password": "admin123"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/perfil": {
+      "get": {
+        "summary": "Obtiene el usuario del token, sin contraseña",
+        "description": "Roles: todos. Obtiene el usuario del token, sin contraseña.",
+        "tags": [
+          "Autenticación"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/coberturas/disponibles": {
+      "get": {
+        "summary": "Coberturas públicas para el formulario de registro",
+        "description": "Roles: público. Coberturas públicas para el formulario de registro.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/sedes": {
+      "get": {
+        "summary": "Lista de registros; sedes y especialidades disponibles para todo usuario autenticado",
+        "description": "Roles: todos. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Alta",
+        "description": "Roles: admin. Alta. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "direccion": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Nueva sede",
+                "direccion": "Calle 123",
+                "telefono": "3424000000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sedes/{id}": {
+      "put": {
+        "summary": "Modificación",
+        "description": "Roles: admin. Modificación. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "direccion": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Nueva sede",
+                "direccion": "Calle 123",
+                "telefono": "3424000000"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Baja física solo si no hay dependencias",
+        "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/especialidades": {
+      "get": {
+        "summary": "Lista de registros; sedes y especialidades disponibles para todo usuario autenticado",
+        "description": "Roles: todos. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Alta",
+        "description": "Roles: admin. Alta. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "descripcion": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "descripcion": "Dermatología"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/especialidades/{id}": {
+      "put": {
+        "summary": "Modificación",
+        "description": "Roles: admin. Modificación. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "descripcion": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "descripcion": "Dermatología"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Baja física solo si no hay dependencias",
+        "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/coberturas": {
+      "get": {
+        "summary": "Lista de registros; sedes y especialidades disponibles para todo usuario autenticado",
+        "description": "Roles: admin. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Alta",
+        "description": "Roles: admin. Alta. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Cobertura de prueba"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coberturas/{id}": {
+      "put": {
+        "summary": "Modificación",
+        "description": "Roles: admin. Modificación. Registra auditoría.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Cobertura de prueba"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Baja física solo si no hay dependencias",
+        "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+        "tags": [
+          "Catálogos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "summary": "Listado paginado de 10 registros",
+        "description": "Roles: admin. Listado paginado de 10 registros. Respuesta datos: {items,total}. Incluye ids de especialidades de cada médico.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "nombre"
+          },
+          {
+            "name": "apellido",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "apellido"
+          },
+          {
+            "name": "rol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "rol"
+          },
+          {
+            "name": "id_sede",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_sede"
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "pagina"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Alta de operador, médico o admin",
+        "description": "Roles: admin. Alta de operador, médico o admin. Médico y operador requieren sede; médico requiere especialidades. Admin sin sede. Alta de pacientes por registro o recepción.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "apellido": {
+                    "type": "string"
+                  },
+                  "dni": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  },
+                  "fecha_nacimiento": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "rol": {
+                    "type": "string"
+                  },
+                  "id_sede": {
+                    "type": "integer"
+                  },
+                  "especialidades": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Paciente",
+                "apellido": "Prueba",
+                "dni": "48999111",
+                "email": "paciente@prueba.test",
+                "telefono": "3424000000",
+                "fecha_nacimiento": "1998-05-10",
+                "password": "prueba123",
+                "rol": "medico",
+                "id_sede": 1,
+                "especialidades": [
+                  1
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "put": {
+        "summary": "Edita todos los datos de un usuario conservando su rol",
+        "description": "Roles: admin. Edita todos los datos de un usuario conservando su rol. Incluye pacientes. Contraseña vacía conserva la actual. No permite quitar una especialidad con agenda.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "apellido": {
+                    "type": "string"
+                  },
+                  "dni": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  },
+                  "fecha_nacimiento": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "rol": {
+                    "type": "string"
+                  },
+                  "id_sede": {
+                    "type": "integer"
+                  },
+                  "especialidades": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Paciente",
+                "apellido": "Prueba",
+                "dni": "48999111",
+                "email": "paciente@prueba.test",
+                "telefono": "3424000000",
+                "fecha_nacimiento": "1998-05-10",
+                "password": "prueba123",
+                "rol": "medico",
+                "id_sede": 1,
+                "especialidades": [
+                  1
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pacientes": {
+      "get": {
+        "summary": "Busca por DNI o apellido",
+        "description": "Roles: admin, medico, operador. Busca por DNI o apellido. Mínimo 2 caracteres; hasta 30 coincidencias. No devuelve contraseña.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "q"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Registra un paciente con las mismas validaciones del registro público",
+        "description": "Roles: operador. Registra un paciente con las mismas validaciones del registro público. Audita al operador.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "apellido": {
+                    "type": "string"
+                  },
+                  "dni": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  },
+                  "fecha_nacimiento": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "id_cobertura": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "nombre": "Paciente",
+                "apellido": "Prueba",
+                "dni": "48999111",
+                "email": "paciente@prueba.test",
+                "telefono": "3424000000",
+                "fecha_nacimiento": "1998-05-10",
+                "password": "prueba123",
+                "id_cobertura": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pacientes/perfil": {
+      "put": {
+        "summary": "Solo admite email, teléfono, cobertura y contraseña opcional; rechaza otras propiedades",
+        "description": "Roles: paciente. Solo admite email, teléfono, cobertura y contraseña opcional; rechaza otras propiedades. El id sale del token.",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "telefono": {
+                    "type": "string"
+                  },
+                  "id_cobertura": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "email": "nuevo@prueba.test",
+                "telefono": "3424000000",
+                "id_cobertura": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medicos": {
+      "get": {
+        "summary": "Devuelve id, nombre, apellido y especialidades; no expone otros datos personales",
+        "description": "Roles: todos. Devuelve id, nombre, apellido y especialidades; no expone otros datos personales. La sede se filtra por agendas del médico.",
+        "tags": [
+          "Disponibilidad"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id_especialidad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_especialidad"
+          },
+          {
+            "name": "id_sede",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_sede"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/disponibilidad": {
+      "get": {
+        "summary": "Requiere médico, sede y especialidad",
+        "description": "Roles: paciente, operador. Requiere médico, sede y especialidad. Sin fecha devuelve fechas con horarios libres futuros; con fecha también devuelve horarios. Turnos de 30 minutos. Datos: {fechas,horarios:[{fecha,hora,id_agenda}],duracion}.",
+        "tags": [
+          "Disponibilidad"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id_medico",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_medico"
+          },
+          {
+            "name": "id_especialidad",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_especialidad"
+          },
+          {
+            "name": "id_sede",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_sede"
+          },
+          {
+            "name": "fecha",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/agendas": {
+      "get": {
+        "summary": "Lista con médico, sede, especialidad y turnos_confirmados",
+        "description": "Roles: admin, medico, operador. Lista con médico, sede, especialidad y turnos_confirmados. Médico solo su agenda; operador puede consultar otras sedes.",
+        "tags": [
+          "Agenda"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "id_sede",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_sede"
+          },
+          {
+            "name": "id_medico",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_medico"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Rangos sin superposición; especialidad asignada al médico",
+        "description": "Roles: admin, medico, operador. Rangos sin superposición; especialidad asignada al médico. Médico solo su agenda; operador solo su sede.",
+        "tags": [
+          "Agenda"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_medico": {
+                    "type": "integer"
+                  },
+                  "id_especialidad": {
+                    "type": "integer"
+                  },
+                  "id_sede": {
+                    "type": "integer"
+                  },
+                  "fecha": {
+                    "type": "string"
+                  },
+                  "hora_entrada": {
+                    "type": "string"
+                  },
+                  "hora_salida": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "id_medico": 3,
+                "id_especialidad": 1,
+                "id_sede": 1,
+                "fecha": "{{fecha}}",
+                "hora_entrada": "08:00",
+                "hora_salida": "12:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendas/{id}": {
+      "put": {
+        "summary": "Mismos permisos",
+        "description": "Roles: admin, medico, operador. Mismos permisos. No puede reasignar el médico ni dejar turnos confirmados/atendidos fuera del rango o alterar su fecha/sede/especialidad.",
+        "tags": [
+          "Agenda"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_medico": {
+                    "type": "integer"
+                  },
+                  "id_especialidad": {
+                    "type": "integer"
+                  },
+                  "id_sede": {
+                    "type": "integer"
+                  },
+                  "fecha": {
+                    "type": "string"
+                  },
+                  "hora_entrada": {
+                    "type": "string"
+                  },
+                  "hora_salida": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "id_medico": 3,
+                "id_especialidad": 1,
+                "id_sede": 1,
+                "fecha": "{{fecha}}",
+                "hora_entrada": "08:00",
+                "hora_salida": "12:00"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Mismos permisos",
+        "description": "Roles: admin, medico, operador. Mismos permisos. No borra agendas con turnos asociados, para conservar el historial; devuelve 409.",
+        "tags": [
+          "Agenda"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/turnos": {
+      "post": {
+        "summary": "Paciente para sí mismo; operador envía id_paciente y solo reserva en su sede",
+        "description": "Roles: paciente, operador. Paciente para sí mismo; operador envía id_paciente y solo reserva en su sede. Cobertura tomada de la base. Conflicto de horario: 409. Alta y notificaciones en una transacción.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_medico": {
+                    "type": "integer"
+                  },
+                  "id_especialidad": {
+                    "type": "integer"
+                  },
+                  "id_sede": {
+                    "type": "integer"
+                  },
+                  "fecha": {
+                    "type": "string"
+                  },
+                  "hora": {
+                    "type": "string"
+                  },
+                  "nota": {
+                    "type": "string"
+                  },
+                  "id_paciente": {
+                    "type": "integer",
+                    "description": "Obligatorio para operador; se ignora para paciente."
+                  }
+                }
+              },
+              "example": {
+                "id_medico": 3,
+                "id_especialidad": 1,
+                "id_sede": 1,
+                "fecha": "{{fecha}}",
+                "hora": "10:30",
+                "nota": "Consulta de control"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/turnos/mios": {
+      "get": {
+        "summary": "Turnos propios con nombres e historial",
+        "description": "Roles: paciente. Turnos propios con nombres e historial. Próximos primero, después pasados del más reciente al más antiguo.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/turnos/medico": {
+      "get": {
+        "summary": "Turnos propios de la fecha en todas las sedes",
+        "description": "Roles: medico. Turnos propios de la fecha en todas las sedes. Incluye paciente, fecha_nacimiento, nota y resumen clínico.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/turnos/sede": {
+      "get": {
+        "summary": "Turnos de su sede en la fecha solicitada",
+        "description": "Roles: operador. Turnos de su sede en la fecha solicitada. La sede sale del perfil actual del token.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/turnos/{id}/cancelar": {
+      "patch": {
+        "summary": "Solo confirmado",
+        "description": "Roles: paciente, operador, medico. Solo confirmado. Paciente: propio; operador: su sede; médico: propio en cualquier sede. Notifica paciente y médico.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              },
+              "example": {}
+            }
+          }
+        }
+      }
+    },
+    "/turnos/{id}/atender": {
+      "patch": {
+        "summary": "Solo turno propio confirmado, en cualquier sede",
+        "description": "Roles: medico. Solo turno propio confirmado, en cualquier sede. Con diagnóstico guarda atención e historial juntos. Sin body conserva compatibilidad con atención y posterior carga de historial.",
+        "tags": [
+          "Turnos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "diagnostico": {
+                    "type": "string"
+                  },
+                  "tratamiento": {
+                    "type": "string"
+                  },
+                  "observaciones": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "diagnostico": "Control de prueba",
+                "tratamiento": "Indicaciones de prueba",
+                "observaciones": "Registro ficticio"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/historial/{idTurno}": {
+      "post": {
+        "summary": "Carga historial de un turno propio ya atendido sin historial previo",
+        "description": "Roles: medico. Carga historial de un turno propio ya atendido sin historial previo. Diagnóstico obligatorio, campos de hasta 255 caracteres.",
+        "tags": [
+          "Historial"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idTurno",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "diagnostico": {
+                    "type": "string"
+                  },
+                  "tratamiento": {
+                    "type": "string"
+                  },
+                  "observaciones": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "diagnostico": "Control de prueba",
+                "tratamiento": "Indicaciones de prueba",
+                "observaciones": "Registro ficticio"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/historial/mio": {
+      "get": {
+        "summary": "Historial completo del paciente autenticado",
+        "description": "Roles: paciente. Historial completo del paciente autenticado.",
+        "tags": [
+          "Historial"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/historial/paciente/{idPaciente}": {
+      "get": {
+        "summary": "Solo registros de ese paciente atendidos por el médico autenticado",
+        "description": "Roles: medico. Solo registros de ese paciente atendidos por el médico autenticado.",
+        "tags": [
+          "Historial"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idPaciente",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/notificaciones": {
+      "get": {
+        "summary": "Notificaciones propias, más recientes primero",
+        "description": "Roles: todos. Notificaciones propias, más recientes primero.",
+        "tags": [
+          "Notificaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/notificaciones/{id}/leida": {
+      "patch": {
+        "summary": "Marca una notificación propia como leída",
+        "description": "Roles: todos. Marca una notificación propia como leída. Una ajena devuelve 404.",
+        "tags": [
+          "Notificaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              },
+              "example": {}
+            }
+          }
+        }
+      }
+    },
+    "/auditoria": {
+      "get": {
+        "summary": "Registro de acciones con nombre del usuario, entidad, detalle y fecha",
+        "description": "Roles: admin. Registro de acciones con nombre del usuario, entidad, detalle y fecha. Más recientes primero; la interfaz lo pagina.",
+        "tags": [
+          "Auditoría y reportes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id_usuario",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id_usuario"
+          },
+          {
+            "name": "entidad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "entidad"
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/reportes/turnos-por-especialidad": {
+      "get": {
+        "summary": "Respuesta datos: [{id,nombre,cantidad}]",
+        "description": "Roles: admin. Respuesta datos: [{id,nombre,cantidad}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+        "tags": [
+          "Auditoría y reportes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/reportes/turnos-por-sede": {
+      "get": {
+        "summary": "Respuesta datos: [{id,nombre,cantidad}]",
+        "description": "Roles: admin. Respuesta datos: [{id,nombre,cantidad}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+        "tags": [
+          "Auditoría y reportes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/reportes/ranking-medicos": {
+      "get": {
+        "summary": "Respuesta datos: [{id_medico,medico,atendidos}]",
+        "description": "Roles: admin. Respuesta datos: [{id_medico,medico,atendidos}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+        "tags": [
+          "Auditoría y reportes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    },
+    "/reportes/tasa-cancelacion": {
+      "get": {
+        "summary": "Respuesta datos: {total,cancelados,tasa}; tasa de 0 a 1",
+        "description": "Roles: admin. Respuesta datos: {total,cancelados,tasa}; tasa de 0 a 1. Fechas inclusivas; sin filtros usa todo el histórico.",
+        "tags": [
+          "Auditoría y reportes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Éxito: {codigo, estado:\"ok\", datos}."
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "401": {
+            "description": "Token ausente, inválido o vencido"
+          },
+          "403": {
+            "description": "Permiso insuficiente"
+          },
+          "404": {
+            "description": "No encontrado"
+          },
+          "409": {
+            "description": "Duplicado, dependencia o conflicto"
+          },
+          "500": {
+            "description": "Error inesperado"
+          }
+        }
+      }
+    }
+  }
+}

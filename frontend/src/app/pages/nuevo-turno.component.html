@@ -1,0 +1,182 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">UNA NUEVA CONSULTA</span>
+    <h1>{{ operador ? 'Asignar turno' : 'Solicitar un turno' }}</h1>
+    <p>Elegí la atención que necesitás. Te mostramos los horarios que siguen disponibles.</p>
+  </div>
+</div>
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+@if (operador && !paciente()) {
+  <mat-card
+    ><mat-card-content
+      ><h2>Primero, elegí al paciente</h2>
+      <app-buscar-paciente (elegido)="paciente.set($event)"></app-buscar-paciente></mat-card-content
+  ></mat-card>
+} @else {
+  <div class="step-grid">
+    <mat-card
+      ><mat-card-content>
+        @if (operador) {
+          <p class="notice">
+            Paciente: <strong>{{ paciente()?.apellido }}, {{ paciente()?.nombre }}</strong> · DNI
+            {{ paciente()?.dni }} <button mat-button (click)="paciente.set(null)">Cambiar</button>
+          </p>
+        }
+        <mat-stepper orientation="vertical" [linear]="true" #pasos>
+          <mat-step [completed]="!!especialidad"
+            ><ng-template matStepLabel>Especialidad</ng-template>
+            <p>¿Qué tipo de consulta necesitás?</p>
+            <mat-form-field appearance="outline"
+              ><mat-label>Especialidad</mat-label
+              ><mat-select [(ngModel)]="especialidad" (selectionChange)="cambiarEspecialidad()">
+                @for (e of especialidades(); track e.id) {
+                  <mat-option [value]="e.id">{{ e.descripcion }}</mat-option>
+                }
+              </mat-select></mat-form-field
+            ><button mat-flat-button matStepperNext [disabled]="!especialidad">
+              Continuar
+            </button></mat-step
+          >
+          <mat-step [completed]="!!sede"
+            ><ng-template matStepLabel>Sede</ng-template>
+            <p>
+              {{ operador ? 'Los turnos se asignan en tu sede.' : 'Elegí dónde querés atenderte.' }}
+            </p>
+            <mat-form-field appearance="outline"
+              ><mat-label>Sede</mat-label
+              ><mat-select
+                [(ngModel)]="sede"
+                (selectionChange)="cargarMedicos()"
+                [disabled]="operador"
+              >
+                @for (s of sedes(); track s.id) {
+                  <mat-option [value]="s.id">{{ s.nombre }}</mat-option>
+                }
+              </mat-select></mat-form-field
+            >
+            <div class="actions">
+              <button mat-button matStepperPrevious>Volver</button
+              ><button mat-flat-button matStepperNext [disabled]="!sede || cargando()">
+                Continuar
+              </button>
+            </div></mat-step
+          >
+          <mat-step [completed]="!!medico"
+            ><ng-template matStepLabel>Médico</ng-template>
+            <p>Profesionales de la especialidad y sede elegidas.</p>
+            <mat-form-field appearance="outline"
+              ><mat-label>Médico</mat-label
+              ><mat-select [(ngModel)]="medico" (selectionChange)="cargarFechas()">
+                @for (m of medicos(); track m.id) {
+                  <mat-option [value]="m.id">{{ m.apellido }}, {{ m.nombre }}</mat-option>
+                }
+              </mat-select></mat-form-field
+            >
+            @if (!cargando() && !medicos().length) {
+              <p class="notice">
+                No hay médicos con agenda para esta combinación. Probá otra sede o especialidad.
+              </p>
+            }
+            <div class="actions">
+              <button mat-button matStepperPrevious>Volver</button
+              ><button mat-flat-button matStepperNext [disabled]="!medico || cargando()">
+                Continuar
+              </button>
+            </div></mat-step
+          >
+          <mat-step [completed]="!!fecha"
+            ><ng-template matStepLabel>Fecha</ng-template>
+            <p>Solo aparecen días con horarios disponibles.</p>
+            <mat-form-field appearance="outline"
+              ><mat-label>Fecha disponible</mat-label
+              ><mat-select [(ngModel)]="fecha" (selectionChange)="cargarHorarios()">
+                @for (f of fechas(); track f) {
+                  <mat-option [value]="f">{{ f | date: 'EEEE dd/MM/yyyy' }}</mat-option>
+                }
+              </mat-select></mat-form-field
+            >
+            @if (!cargando() && !fechas().length) {
+              <p class="notice">
+                Este médico no tiene horarios libres en esta sede. Elegí otro profesional.
+              </p>
+            }
+            <div class="actions">
+              <button mat-button matStepperPrevious>Volver</button
+              ><button mat-flat-button matStepperNext [disabled]="!fecha || cargando()">
+                Continuar
+              </button>
+            </div></mat-step
+          >
+          <mat-step [completed]="!!hora"
+            ><ng-template matStepLabel>Horario</ng-template>
+            <p>Consultas de 30 minutos.</p>
+            <div class="slot-list">
+              @for (h of horarios(); track h.hora) {
+                <button
+                  mat-stroked-button
+                  [class.selected]="hora === h.hora"
+                  [attr.aria-pressed]="hora === h.hora"
+                  (click)="hora = h.hora"
+                >
+                  {{ h.hora }}
+                </button>
+              }
+            </div>
+            @if (!cargando() && !horarios().length) {
+              <p class="notice">
+                Ya no quedan horarios libres para este día. Volvé al paso anterior para elegir otra
+                fecha.
+              </p>
+            }
+            <div class="actions">
+              <button mat-button matStepperPrevious>Volver</button
+              ><button mat-flat-button matStepperNext [disabled]="!hora">Continuar</button>
+            </div></mat-step
+          >
+          <mat-step
+            ><ng-template matStepLabel>Nota y confirmación</ng-template>
+            <p>Contanos brevemente el motivo de la consulta.</p>
+            <mat-form-field appearance="outline"
+              ><mat-label>Nota para el médico</mat-label
+              ><textarea matInput [(ngModel)]="nota" maxlength="40" rows="3" required></textarea
+              ><mat-hint align="end">{{ nota.length }} / 40</mat-hint></mat-form-field
+            >
+            <p class="notice">
+              Revisá el resumen antes de confirmar. La cobertura es la registrada por el paciente.
+            </p>
+            <div class="actions">
+              <button mat-button matStepperPrevious [disabled]="guardando()">Volver</button
+              ><button
+                mat-flat-button
+                [disabled]="guardando() || !hora || !nota.trim()"
+                (click)="confirmar(pasos)"
+              >
+                {{ guardando() ? 'Confirmando…' : 'Confirmar turno' }}
+              </button>
+            </div></mat-step
+          >
+        </mat-stepper></mat-card-content
+      ></mat-card
+    >
+    <aside class="summary">
+      <span class="eyebrow">TU CONSULTA</span>
+      <h2>Resumen del turno</h2>
+      <dl>
+        <dt>ESPECIALIDAD</dt>
+        <dd>{{ nombreEspecialidad() || 'Por elegir' }}</dd>
+        <dt>SEDE</dt>
+        <dd>{{ nombreSede() || 'Por elegir' }}</dd>
+        <dt>PROFESIONAL</dt>
+        <dd>{{ nombreMedico() || 'Por elegir' }}</dd>
+        <dt>FECHA Y HORARIO</dt>
+        <dd>
+          {{ fecha ? (fecha | date: 'dd/MM/yyyy') : 'Por elegir' }} {{ hora ? '· ' + hora : '' }}
+        </dd>
+        <dt>COBERTURA</dt>
+        <dd>{{ cobertura() }}</dd>
+      </dl>
+    </aside>
+  </div>
+}

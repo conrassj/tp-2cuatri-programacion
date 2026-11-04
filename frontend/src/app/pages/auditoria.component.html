@@ -1,0 +1,84 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>Auditoría</h1>
+    <p>Registro de acciones. Los cambios más recientes aparecen primero.</p>
+  </div>
+  <span class="date-chip">Solo lectura</span>
+</div>
+<mat-card
+  ><mat-card-content
+    ><form class="filters" (ngSubmit)="cargar()">
+      <mat-form-field appearance="outline"
+        ><mat-label>Usuario (ID)</mat-label
+        ><input
+          matInput
+          name="usuario"
+          [(ngModel)]="usuario"
+          type="number"
+          min="1" /></mat-form-field
+      ><mat-form-field appearance="outline"
+        ><mat-label>Entidad</mat-label
+        ><mat-select name="entidad" [(ngModel)]="entidad"
+          ><mat-option value="">Todas</mat-option>
+          @for (e of entidades; track e) {
+            <mat-option [value]="e">{{ e }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      ><mat-form-field appearance="outline"
+        ><mat-label>Desde</mat-label
+        ><input matInput name="desde" [(ngModel)]="desde" type="date" /></mat-form-field
+      ><mat-form-field appearance="outline"
+        ><mat-label>Hasta</mat-label
+        ><input matInput name="hasta" [(ngModel)]="hasta" type="date" /></mat-form-field
+      ><button mat-stroked-button>Aplicar filtros</button>
+    </form>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @if (!cargando() && !items().length) {
+      <div class="empty">
+        <mat-icon>history</mat-icon>
+        <h3>No hay movimientos para estos filtros</h3>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="paginaActual()">
+        <ng-container matColumnDef="fecha"
+          ><th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let l">
+            {{ l.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </td></ng-container
+        ><ng-container matColumnDef="usuario"
+          ><th mat-header-cell *matHeaderCellDef>Usuario</th>
+          <td mat-cell *matCellDef="let l">
+            {{ l.usuario }}<small class="muted"> · #{{ l.id_usuario }}</small>
+          </td></ng-container
+        ><ng-container matColumnDef="accion"
+          ><th mat-header-cell *matHeaderCellDef>Acción</th>
+          <td mat-cell *matCellDef="let l">
+            <span
+              class="status"
+              [class.cancelado]="l.accion === 'BAJA'"
+              [class.atendido]="l.accion === 'MODIFICACION'"
+              >{{ l.accion }}</span
+            >
+          </td></ng-container
+        ><ng-container matColumnDef="entidad"
+          ><th mat-header-cell *matHeaderCellDef>Entidad</th>
+          <td mat-cell *matCellDef="let l">{{ l.entidad }}</td></ng-container
+        ><ng-container matColumnDef="detalle"
+          ><th mat-header-cell *matHeaderCellDef>Detalle</th>
+          <td mat-cell *matCellDef="let l">{{ l.detalle }}</td></ng-container
+        >
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let r; columns: columnas"></tr>
+      </table>
+    }
+    <mat-paginator
+      [length]="items().length"
+      [pageSize]="10"
+      [pageIndex]="pagina"
+      (page)="pagina = $event.pageIndex"
+      aria-label="Página de auditoría"
+    ></mat-paginator></mat-card-content
+></mat-card>

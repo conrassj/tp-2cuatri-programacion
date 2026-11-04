@@ -1,0 +1,1 @@
+{"folders":[{"path":"."}],"settings":{"window.title":"Clínica · FRONTEND — ${rootName}","files.exclude":{"node_modules":true,"dist":true,".angular":true}},"tasks":{"version":"2.0.0","tasks":[{"label":"Levantar frontend","type":"shell","command":"npm start","isBackground":true,"problemMatcher":[]}]}}

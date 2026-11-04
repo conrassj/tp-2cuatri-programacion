@@ -1,0 +1,74 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>Reportes y estadísticas</h1>
+    <p>Una mirada a la actividad de la clínica.</p>
+  </div>
+  <span class="date-chip">{{ desde || hasta ? 'Período seleccionado' : 'Todo el histórico' }}</span>
+</div>
+<form class="filters" (ngSubmit)="cargar()">
+  <mat-form-field appearance="outline"
+    ><mat-label>Desde</mat-label
+    ><input matInput type="date" name="desde" [(ngModel)]="desde" /></mat-form-field
+  ><mat-form-field appearance="outline"
+    ><mat-label>Hasta</mat-label
+    ><input matInput type="date" name="hasta" [(ngModel)]="hasta" /></mat-form-field
+  ><button mat-flat-button [disabled]="cargando()">Aplicar período</button
+  ><button mat-button type="button" (click)="desde = ''; hasta = ''; cargar()">Ver todo</button>
+</form>
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+<div class="metrics">
+  <div class="metric">
+    <span class="muted">TURNOS EN EL PERÍODO</span><strong>{{ tasa().total }}</strong>
+  </div>
+  <div class="metric">
+    <span class="muted">TURNOS CANCELADOS</span><strong>{{ tasa().cancelados }}</strong>
+  </div>
+  <div class="metric">
+    <span class="muted">TASA DE CANCELACIÓN</span
+    ><strong>{{ tasa().tasa | percent: '1.0-2' }}</strong>
+  </div>
+</div>
+@if (!cargando() && !tasa().total) {
+  <p class="notice">No hay turnos en este período. Los indicadores se muestran en cero.</p>
+}
+<div class="reports-grid">
+  <mat-card
+    ><mat-card-content
+      ><h3>Turnos por especialidad</h3>
+      <app-grafico
+        [etiquetas]="nombres(especialidades())"
+        [valores]="cantidades(especialidades())"
+      ></app-grafico>
+      <div class="muted">
+        @for (e of especialidades(); track e.id) {
+          <p>{{ e.nombre }}: {{ e.cantidad }}</p>
+        }
+      </div></mat-card-content
+    ></mat-card
+  ><mat-card
+    ><mat-card-content
+      ><h3>Turnos por sede</h3>
+      <app-grafico [etiquetas]="nombres(sedes())" [valores]="cantidades(sedes())"></app-grafico>
+      <div class="muted">
+        @for (s of sedes(); track s.id) {
+          <p>{{ s.nombre }}: {{ s.cantidad }}</p>
+        }
+      </div></mat-card-content
+    ></mat-card
+  ><mat-card style="grid-column: 1/-1"
+    ><mat-card-content
+      ><h3>Médicos por turnos atendidos</h3>
+      @for (m of ranking(); track m.id_medico; let i = $index) {
+        <div class="patient-row">
+          <strong>{{ i + 1 }}. {{ m.medico }}</strong
+          ><span class="status">{{ m.atendidos }} atendidos</span>
+        </div>
+      } @empty {
+        <p class="muted">No hay atenciones registradas.</p>
+      }
+    </mat-card-content></mat-card
+  >
+</div>

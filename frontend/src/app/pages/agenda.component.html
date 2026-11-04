@@ -1,0 +1,97 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">ORGANIZACIÓN DE LA ATENCIÓN</span>
+    <h1>{{ medico ? 'Mi agenda' : 'Agenda médica' }}</h1>
+    <p>
+      {{
+        medico
+          ? 'Tus horarios de atención, en todas las sedes.'
+          : 'Consultá la disponibilidad y organizá los horarios de tu sede.'
+      }}
+    </p>
+  </div>
+  <button mat-flat-button [disabled]="!puedeEditar() || !medicos().length" (click)="elegirMedico()">
+    <mat-icon>add</mat-icon>Nueva agenda
+  </button>
+</div>
+<mat-card
+  ><mat-card-content
+    ><div class="filters">
+      <mat-form-field appearance="outline"
+        ><mat-label>Fecha</mat-label
+        ><input matInput type="date" [(ngModel)]="fecha" (change)="cargar()" /></mat-form-field
+      ><mat-form-field appearance="outline"
+        ><mat-label>Sede</mat-label
+        ><mat-select [(ngModel)]="sede" (selectionChange)="cargar()">
+          @if (medico) {
+            <mat-option [value]="''">Todas las sedes</mat-option>
+          }
+          @for (s of sedes(); track s.id) {
+            <mat-option [value]="s.id">{{ s.nombre }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      ><button mat-icon-button (click)="cargar()" aria-label="Actualizar agenda">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    @if (!puedeEditar()) {
+      <p class="notice">Esta sede se puede consultar. Solo podés modificar la agenda de tu sede.</p>
+    }
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @if (!cargando() && !items().length) {
+      <div class="empty">
+        <mat-icon>calendar_month</mat-icon>
+        <h3>No hay horarios cargados</h3>
+        <p>Seleccioná otra fecha o agregá una agenda.</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="items()">
+        <ng-container matColumnDef="medico"
+          ><th mat-header-cell *matHeaderCellDef>Médico</th>
+          <td mat-cell *matCellDef="let a">
+            <strong>{{ a.medico }}</strong>
+          </td></ng-container
+        ><ng-container matColumnDef="especialidad"
+          ><th mat-header-cell *matHeaderCellDef>Especialidad</th>
+          <td mat-cell *matCellDef="let a">{{ a.especialidad }}</td></ng-container
+        ><ng-container matColumnDef="horario"
+          ><th mat-header-cell *matHeaderCellDef>Horario / sede</th>
+          <td mat-cell *matCellDef="let a">
+            {{ a.hora_entrada }} – {{ a.hora_salida }}
+            <p class="muted">{{ a.sede }}</p>
+          </td></ng-container
+        ><ng-container matColumnDef="acciones"
+          ><th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let a">
+            <button
+              mat-icon-button
+              [disabled]="!puedeEditar(a)"
+              (click)="editar(a.id_medico, a)"
+              aria-label="Editar agenda"
+            >
+              <mat-icon>edit</mat-icon></button
+            ><button
+              mat-icon-button
+              [disabled]="!puedeEditar(a) || !!a.turnos_confirmados"
+              (click)="eliminar(a)"
+              [matTooltip]="a.turnos_confirmados ? 'Tiene turnos confirmados' : 'Eliminar agenda'"
+              aria-label="Eliminar agenda"
+            >
+              <mat-icon>delete_outline</mat-icon></button
+            ><button
+              mat-icon-button
+              [disabled]="!puedeEditar(a)"
+              (click)="verTurnos(a)"
+              aria-label="Ver turnos"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td></ng-container
+        >
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+      </table>
+    }</mat-card-content
+></mat-card>

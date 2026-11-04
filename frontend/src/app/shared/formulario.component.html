@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{ datos.titulo }}</h2>
+<mat-dialog-content
+  ><form id="form-dialogo" [formGroup]="form" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      @for (c of datos.campos; track c.clave) {
+        <mat-form-field appearance="outline"
+          ><mat-label>{{ c.etiqueta }}</mat-label>
+          @if (c.opciones) {
+            <mat-select [formControlName]="c.clave" [multiple]="!!c.multiple">
+              @for (o of c.opciones; track o.id) {
+                <mat-option [value]="o.id">{{ o.nombre }}</mat-option>
+              }
+            </mat-select>
+          } @else if (c.tipo === 'textarea') {
+            <textarea
+              matInput
+              [formControlName]="c.clave"
+              [attr.maxlength]="c.max"
+              rows="3"
+            ></textarea>
+          } @else {
+            <input
+              matInput
+              [type]="c.tipo || 'text'"
+              [formControlName]="c.clave"
+              [attr.maxlength]="c.max"
+            />
+          }
+          <mat-error>{{ mensaje(c) }}</mat-error></mat-form-field
+        >
+      }
+    </div>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+  </form></mat-dialog-content
+>
+<mat-dialog-actions align="end"
+  ><button mat-button [disabled]="ocupado()" (click)="ref.close()">Volver</button
+  ><button mat-flat-button type="submit" form="form-dialogo" [disabled]="ocupado()">
+    {{ ocupado() ? 'Guardando…' : 'Guardar' }}
+  </button></mat-dialog-actions
+>

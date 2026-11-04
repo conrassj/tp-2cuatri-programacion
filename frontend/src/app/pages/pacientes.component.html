@@ -1,0 +1,50 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">PACIENTES</span>
+    <h1>{{ medico ? 'Historial clínico' : 'Gestión de pacientes' }}</h1>
+    <p>
+      {{
+        medico
+          ? 'Buscá un paciente para ver las atenciones que registraste.'
+          : 'Buscá pacientes por DNI o apellido, o registrá uno nuevo.'
+      }}
+    </p>
+  </div>
+  @if (!medico) {
+    <button mat-flat-button (click)="registrar()">
+      <mat-icon>person_add</mat-icon>Registrar paciente
+    </button>
+  }
+</div>
+<mat-card
+  ><mat-card-content
+    ><app-buscar-paciente (elegido)="seleccionar($event)"></app-buscar-paciente></mat-card-content
+></mat-card>
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+@if (paciente(); as p) {
+  <mat-card style="margin-top: 24px"
+    ><mat-card-content
+      ><h2>{{ p.apellido }}, {{ p.nombre }}</h2>
+      <p>DNI {{ p.dni }} · {{ p.cobertura }}</p>
+      @if (medico) {
+        @for (h of historial(); track h.id) {
+          <div class="notice">
+            <strong>{{ h.fecha_registro | date: 'dd/MM/yyyy HH:mm' }}</strong>
+            <p><b>Diagnóstico:</b> {{ h.diagnostico }}</p>
+            <p><b>Tratamiento:</b> {{ h.tratamiento || 'Sin indicaciones' }}</p>
+            <p><b>Observaciones:</b> {{ h.observaciones || 'Sin observaciones' }}</p>
+          </div>
+        } @empty {
+          @if (!cargando()) {
+            <p class="notice">No tenés atenciones registradas para este paciente.</p>
+          }
+        }
+      } @else {
+        <p>Fecha de nacimiento: {{ p.fecha_nacimiento | date: 'dd/MM/yyyy' }}</p>
+        <p>Para asignarle una consulta, entrá en “Asignar turno” desde el menú.</p>
+      }
+    </mat-card-content></mat-card
+  >
+}

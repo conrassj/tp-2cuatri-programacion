@@ -1,0 +1,1436 @@
+{
+  "info": {
+    "name": "Clínica — Integración frontend final",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Documentación completa de la API final. Ejecutar un login del rol indicado antes de las peticiones. Datos ficticios; usar base de demostración."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "idTurno",
+      "value": "1"
+    },
+    {
+      "key": "idPaciente",
+      "value": "2"
+    },
+    {
+      "key": "fecha",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health",
+            "description": "Roles: público. Verifica servidor y conexión con MySQL.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "POST /auth/registro",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/registro",
+            "description": "Roles: público. Crea solo pacientes. DNI y email únicos. Contraseña de 6 caracteres a 72 bytes. Fecha de nacimiento real y no futura.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente\",\n  \"apellido\": \"Prueba\",\n  \"dni\": \"48999111\",\n  \"email\": \"paciente@prueba.test\",\n  \"telefono\": \"3424000000\",\n  \"fecha_nacimiento\": \"1998-05-10\",\n  \"password\": \"prueba123\",\n  \"id_cobertura\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Roles: público. Devuelve token y usuario sin contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"18222333\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===200)pm.collectionVariables.set('token',pm.response.json().datos.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/perfil",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/perfil",
+            "description": "Roles: todos. Obtiene el usuario del token, sin contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login operador",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Roles: público. Devuelve token y usuario sin contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"15200548\",\n  \"password\": \"operador123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===200)pm.collectionVariables.set('token',pm.response.json().datos.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login medico",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Roles: público. Devuelve token y usuario sin contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"20111222\",\n  \"password\": \"medico123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===200)pm.collectionVariables.set('token',pm.response.json().datos.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login paciente",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Roles: público. Devuelve token y usuario sin contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"36000960\",\n  \"password\": \"paciente123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===200)pm.collectionVariables.set('token',pm.response.json().datos.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catálogos",
+      "item": [
+        {
+          "name": "GET /coberturas/disponibles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/coberturas/disponibles",
+            "description": "Roles: público. Coberturas públicas para el formulario de registro.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "GET /sedes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sedes",
+            "description": "Roles: todos. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /sedes",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sedes",
+            "description": "Roles: admin. Alta. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nueva sede\",\n  \"direccion\": \"Calle 123\",\n  \"telefono\": \"3424000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /sedes/{id}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/sedes/{{id}}",
+            "description": "Roles: admin. Modificación. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nueva sede\",\n  \"direccion\": \"Calle 123\",\n  \"telefono\": \"3424000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /sedes/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sedes/{{id}}",
+            "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /especialidades",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/especialidades",
+            "description": "Roles: todos. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /especialidades",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/especialidades",
+            "description": "Roles: admin. Alta. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Dermatología\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /especialidades/{id}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/especialidades/{{id}}",
+            "description": "Roles: admin. Modificación. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Dermatología\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /especialidades/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/especialidades/{{id}}",
+            "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /coberturas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/coberturas",
+            "description": "Roles: admin. Lista de registros; sedes y especialidades disponibles para todo usuario autenticado.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /coberturas",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/coberturas",
+            "description": "Roles: admin. Alta. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cobertura de prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /coberturas/{id}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/coberturas/{{id}}",
+            "description": "Roles: admin. Modificación. Registra auditoría.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cobertura de prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /coberturas/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/coberturas/{{id}}",
+            "description": "Roles: admin. Baja física solo si no hay dependencias. Si está en uso devuelve 409 y conserva el registro.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "GET /usuarios",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/usuarios?nombre=&apellido=&rol=&id_sede=1&pagina=1",
+            "description": "Roles: admin. Listado paginado de 10 registros. Respuesta datos: {items,total}. Incluye ids de especialidades de cada médico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /usuarios",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/usuarios",
+            "description": "Roles: admin. Alta de operador, médico o admin. Médico y operador requieren sede; médico requiere especialidades. Admin sin sede. Alta de pacientes por registro o recepción.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente\",\n  \"apellido\": \"Prueba\",\n  \"dni\": \"48999111\",\n  \"email\": \"paciente@prueba.test\",\n  \"telefono\": \"3424000000\",\n  \"fecha_nacimiento\": \"1998-05-10\",\n  \"password\": \"prueba123\",\n  \"rol\": \"medico\",\n  \"id_sede\": 1,\n  \"especialidades\": [\n    1\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /usuarios/{id}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/usuarios/{{id}}",
+            "description": "Roles: admin. Edita todos los datos de un usuario conservando su rol. Incluye pacientes. Contraseña vacía conserva la actual. No permite quitar una especialidad con agenda.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente\",\n  \"apellido\": \"Prueba\",\n  \"dni\": \"48999111\",\n  \"email\": \"paciente@prueba.test\",\n  \"telefono\": \"3424000000\",\n  \"fecha_nacimiento\": \"1998-05-10\",\n  \"password\": \"prueba123\",\n  \"rol\": \"medico\",\n  \"id_sede\": 1,\n  \"especialidades\": [\n    1\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /pacientes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/pacientes?q=Fr",
+            "description": "Roles: admin, medico, operador. Busca por DNI o apellido. Mínimo 2 caracteres; hasta 30 coincidencias. No devuelve contraseña.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /pacientes",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/pacientes",
+            "description": "Roles: operador. Registra un paciente con las mismas validaciones del registro público. Audita al operador.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente\",\n  \"apellido\": \"Prueba\",\n  \"dni\": \"48999111\",\n  \"email\": \"paciente@prueba.test\",\n  \"telefono\": \"3424000000\",\n  \"fecha_nacimiento\": \"1998-05-10\",\n  \"password\": \"prueba123\",\n  \"id_cobertura\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /pacientes/perfil",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/pacientes/perfil",
+            "description": "Roles: paciente. Solo admite email, teléfono, cobertura y contraseña opcional; rechaza otras propiedades. El id sale del token.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@prueba.test\",\n  \"telefono\": \"3424000000\",\n  \"id_cobertura\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disponibilidad",
+      "item": [
+        {
+          "name": "GET /medicos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/medicos?id_especialidad=1&id_sede=1",
+            "description": "Roles: todos. Devuelve id, nombre, apellido y especialidades; no expone otros datos personales. La sede se filtra por agendas del médico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /disponibilidad",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/disponibilidad?id_medico=3&id_especialidad=1&id_sede=1&fecha={{fecha}}",
+            "description": "Roles: paciente, operador. Requiere médico, sede y especialidad. Sin fecha devuelve fechas con horarios libres futuros; con fecha también devuelve horarios. Turnos de 30 minutos. Datos: {fechas,horarios:[{fecha,hora,id_agenda}],duracion}.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agenda",
+      "item": [
+        {
+          "name": "GET /agendas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agendas?fecha={{fecha}}&id_sede=1&id_medico=3",
+            "description": "Roles: admin, medico, operador. Lista con médico, sede, especialidad y turnos_confirmados. Médico solo su agenda; operador puede consultar otras sedes.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /agendas",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/agendas",
+            "description": "Roles: admin, medico, operador. Rangos sin superposición; especialidad asignada al médico. Médico solo su agenda; operador solo su sede.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medico\": 3,\n  \"id_especialidad\": 1,\n  \"id_sede\": 1,\n  \"fecha\": \"{{fecha}}\",\n  \"hora_entrada\": \"08:00\",\n  \"hora_salida\": \"12:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /agendas/{id}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/agendas/{{id}}",
+            "description": "Roles: admin, medico, operador. Mismos permisos. No puede reasignar el médico ni dejar turnos confirmados/atendidos fuera del rango o alterar su fecha/sede/especialidad.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medico\": 3,\n  \"id_especialidad\": 1,\n  \"id_sede\": 1,\n  \"fecha\": \"{{fecha}}\",\n  \"hora_entrada\": \"08:00\",\n  \"hora_salida\": \"12:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /agendas/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/agendas/{{id}}",
+            "description": "Roles: admin, medico, operador. Mismos permisos. No borra agendas con turnos asociados, para conservar el historial; devuelve 409.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Turnos",
+      "item": [
+        {
+          "name": "POST /turnos",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/turnos",
+            "description": "Roles: paciente, operador. Paciente para sí mismo; operador envía id_paciente y solo reserva en su sede. Cobertura tomada de la base. Conflicto de horario: 409. Alta y notificaciones en una transacción.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medico\": 3,\n  \"id_especialidad\": 1,\n  \"id_sede\": 1,\n  \"fecha\": \"{{fecha}}\",\n  \"hora\": \"10:30\",\n  \"nota\": \"Consulta de control\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /turnos/mios",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/turnos/mios",
+            "description": "Roles: paciente. Turnos propios con nombres e historial. Próximos primero, después pasados del más reciente al más antiguo.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /turnos/medico",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/turnos/medico?fecha={{fecha}}",
+            "description": "Roles: medico. Turnos propios de la fecha en todas las sedes. Incluye paciente, fecha_nacimiento, nota y resumen clínico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /turnos/sede",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/turnos/sede?fecha={{fecha}}",
+            "description": "Roles: operador. Turnos de su sede en la fecha solicitada. La sede sale del perfil actual del token.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /turnos/{id}/cancelar",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/turnos/{{id}}/cancelar",
+            "description": "Roles: paciente, operador, medico. Solo confirmado. Paciente: propio; operador: su sede; médico: propio en cualquier sede. Notifica paciente y médico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /turnos/{id}/atender",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/turnos/{{id}}/atender",
+            "description": "Roles: medico. Solo turno propio confirmado, en cualquier sede. Con diagnóstico guarda atención e historial juntos. Sin body conserva compatibilidad con atención y posterior carga de historial.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnostico\": \"Control de prueba\",\n  \"tratamiento\": \"Indicaciones de prueba\",\n  \"observaciones\": \"Registro ficticio\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Historial",
+      "item": [
+        {
+          "name": "POST /historial/{idTurno}",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/historial/{{idTurno}}",
+            "description": "Roles: medico. Carga historial de un turno propio ya atendido sin historial previo. Diagnóstico obligatorio, campos de hasta 255 caracteres.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnostico\": \"Control de prueba\",\n  \"tratamiento\": \"Indicaciones de prueba\",\n  \"observaciones\": \"Registro ficticio\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /historial/mio",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/historial/mio",
+            "description": "Roles: paciente. Historial completo del paciente autenticado.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /historial/paciente/{idPaciente}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/historial/paciente/{{idPaciente}}",
+            "description": "Roles: medico. Solo registros de ese paciente atendidos por el médico autenticado.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "item": [
+        {
+          "name": "GET /notificaciones",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notificaciones",
+            "description": "Roles: todos. Notificaciones propias, más recientes primero.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /notificaciones/{id}/leida",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/notificaciones/{{id}}/leida",
+            "description": "Roles: todos. Marca una notificación propia como leída. Una ajena devuelve 404.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auditoría y reportes",
+      "item": [
+        {
+          "name": "GET /auditoria",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auditoria?id_usuario=&entidad=&desde=&hasta=",
+            "description": "Roles: admin. Registro de acciones con nombre del usuario, entidad, detalle y fecha. Más recientes primero; la interfaz lo pagina.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /reportes/turnos-por-especialidad",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/turnos-por-especialidad?desde=&hasta=",
+            "description": "Roles: admin. Respuesta datos: [{id,nombre,cantidad}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /reportes/turnos-por-sede",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/turnos-por-sede?desde=&hasta=",
+            "description": "Roles: admin. Respuesta datos: [{id,nombre,cantidad}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /reportes/ranking-medicos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/ranking-medicos?desde=&hasta=",
+            "description": "Roles: admin. Respuesta datos: [{id_medico,medico,atendidos}]. Fechas inclusivas; sin filtros usa todo el histórico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /reportes/tasa-cancelacion",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/tasa-cancelacion?desde=&hasta=",
+            "description": "Roles: admin. Respuesta datos: {total,cancelados,tasa}; tasa de 0 a 1. Fechas inclusivas; sin filtros usa todo el histórico.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('fecha')) { const d=new Date(); d.setDate(d.getDate()+1); pm.collectionVariables.set('fecha',d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')); }"
+        ]
+      }
+    }
+  ]
+}
